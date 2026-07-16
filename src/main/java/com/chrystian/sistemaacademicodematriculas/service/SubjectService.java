@@ -2,6 +2,7 @@ package com.chrystian.sistemaacademicodematriculas.service;
 
 import com.chrystian.sistemaacademicodematriculas.dto.SubjectCreateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.dto.SubjectResponseDTO;
+import com.chrystian.sistemaacademicodematriculas.dto.SubjectUpdateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.exception.BusinessException;
 import com.chrystian.sistemaacademicodematriculas.model.Course;
 import com.chrystian.sistemaacademicodematriculas.model.Subject;
@@ -45,8 +46,18 @@ public class SubjectService {
         return new SubjectResponseDTO(savedSubject.getId(), savedSubject.getName(), savedSubject.getClassHours(), course.getId(), course.getName());
     }
 
-    public Subject update(UUID id, Subject subject) {
-        // TODO: Add validation to check if the subject exists
+    @Transactional
+    public Subject update(UUID id, SubjectUpdateRequestDTO subjectUpdateDTO) {
+        Subject subject = subjectRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Subject with the provided ID not found."));
+
+        Course course = courseRepository.findById(subjectUpdateDTO.courseId())
+                .orElseThrow(() -> new BusinessException("Course with the provided ID not found."));
+
+        subject.setName(subjectUpdateDTO.name());
+        subject.setClassHours(subjectUpdateDTO.classHours());
+        subject.setCourse(course);
+
         return subjectRepository.save(subject);
     }
 
