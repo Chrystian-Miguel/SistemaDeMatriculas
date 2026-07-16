@@ -1,8 +1,11 @@
 package com.chrystian.sistemaacademicodematriculas.controller;
 
+import com.chrystian.sistemaacademicodematriculas.dto.CourseCreateRequestDTO;
+import com.chrystian.sistemaacademicodematriculas.dto.CourseUpdateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.model.Course;
 import com.chrystian.sistemaacademicodematriculas.service.CourseService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,13 +29,15 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<Course> create(@Valid @RequestBody Course course) {
-        return ResponseEntity.ok(service.create(course));
+    public ResponseEntity<Course> create(@Valid @RequestBody CourseCreateRequestDTO courseDTO) {
+        Course createdCourse = service.create(courseDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdCourse);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Course> update(@PathVariable UUID id, @Valid @RequestBody Course course) {
-        return ResponseEntity.ok(service.update(id, course));
+    public ResponseEntity<Course> update(@PathVariable UUID id, @Valid @RequestBody CourseUpdateRequestDTO courseDTO) {
+        Course updatedCourse = service.update(id, courseDTO);
+        return ResponseEntity.ok(updatedCourse);
     }
 
     @DeleteMapping("/{id}")

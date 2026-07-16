@@ -2,6 +2,7 @@ package com.chrystian.sistemaacademicodematriculas.controller;
 
 import com.chrystian.sistemaacademicodematriculas.dto.SubjectCreateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.dto.SubjectResponseDTO;
+import com.chrystian.sistemaacademicodematriculas.dto.SubjectUpdateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.model.Subject;
 import com.chrystian.sistemaacademicodematriculas.service.SubjectService;
 import jakarta.validation.Valid;
@@ -33,7 +34,7 @@ public class SubjectController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Subject> update(@PathVariable UUID id, @Valid @RequestBody Subject subject) {
+    public ResponseEntity<Subject> update(@PathVariable UUID id, @Valid @RequestBody SubjectUpdateRequestDTO subject) {
         // TODO: This should also be updated to use a DTO
         return ResponseEntity.ok(service.update(id, subject));
     }

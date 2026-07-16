@@ -1,8 +1,12 @@
 package com.chrystian.sistemaacademicodematriculas.service;
 
+import com.chrystian.sistemaacademicodematriculas.dto.CourseCreateRequestDTO;
+import com.chrystian.sistemaacademicodematriculas.dto.CourseUpdateRequestDTO;
+import com.chrystian.sistemaacademicodematriculas.exception.BusinessException;
 import com.chrystian.sistemaacademicodematriculas.model.Course;
 import com.chrystian.sistemaacademicodematriculas.repository.CourseRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,12 +24,22 @@ public class CourseService {
         return repository.findAll();
     }
 
-    public Course create(Course course) {
-        return repository.save(course);
+    @Transactional
+    public Course create(CourseCreateRequestDTO courseDTO) {
+        Course newCourse = new Course();
+        newCourse.setName(courseDTO.name());
+        newCourse.setDescription(courseDTO.description());
+        return repository.save(newCourse);
     }
 
-    public Course update(UUID id, Course course) {
-        // TODO: Add validation to check if the course exists
+    @Transactional
+    public Course update(UUID id, CourseUpdateRequestDTO courseDTO) {
+        Course course = repository.findById(id)
+                .orElseThrow(() -> new BusinessException("Course with the provided ID not found."));
+
+        course.setName(courseDTO.name());
+        course.setDescription(courseDTO.description());
+
         return repository.save(course);
     }
 
