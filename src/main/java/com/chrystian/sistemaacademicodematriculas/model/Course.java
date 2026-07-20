@@ -3,9 +3,7 @@ package com.chrystian.sistemaacademicodematriculas.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -18,6 +16,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(of = {"id", "name"})
+@EqualsAndHashCode(of = "id")
 public class Course {
 
     @Id
@@ -50,18 +50,5 @@ public class Course {
     public void removeSubject(Subject subject) {
         this.subjects.remove(subject);
         subject.setCourse(null);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Course)) return false;
-        Course other = (Course) o;
-        return id != null && id.equals(other.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
     }
 }

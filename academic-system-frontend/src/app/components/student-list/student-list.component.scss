@@ -1,0 +1,26 @@
+.student-list-container {
+  margin: 20px;
+}
+
+.table-container {
+  margin-top: 8px;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+table {
+  width: 100%;
+}
+
+.search-field {
+  width: 100%;
+  margin: 12px 0 8px;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+}

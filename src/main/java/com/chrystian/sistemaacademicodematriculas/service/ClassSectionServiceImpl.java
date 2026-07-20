@@ -1,13 +1,17 @@
 package com.chrystian.sistemaacademicodematriculas.service;
 
+import com.chrystian.sistemaacademicodematriculas.contract.ClassSectionService;
 import com.chrystian.sistemaacademicodematriculas.dto.ClassSectionCreateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.dto.ClassSectionUpdateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.exception.BusinessException;
+import com.chrystian.sistemaacademicodematriculas.exception.DuplicateResourceException;
+import com.chrystian.sistemaacademicodematriculas.exception.ResourceNotFoundException;
 import com.chrystian.sistemaacademicodematriculas.model.ClassSection;
 import com.chrystian.sistemaacademicodematriculas.model.ClassSectionStatus;
 import com.chrystian.sistemaacademicodematriculas.model.Subject;
 import com.chrystian.sistemaacademicodematriculas.repository.ClassSectionRepository;
 import com.chrystian.sistemaacademicodematriculas.repository.SubjectRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,44 +19,57 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class ClassSectionService {
+@RequiredArgsConstructor
+public class ClassSectionServiceImpl implements ClassSectionService {
 
     private final ClassSectionRepository repository;
     private final SubjectRepository subjectRepository;
 
-    public ClassSectionService(ClassSectionRepository repository, SubjectRepository subjectRepository) {
-        this.repository = repository;
-        this.subjectRepository = subjectRepository;
-    }
-
+    @Override
+    @Transactional(readOnly = true)
     public List<ClassSection> list() {
         return repository.findAll();
     }
 
+    @Override
     @Transactional
     public ClassSection create(ClassSectionCreateRequestDTO classSectionDTO) {
+        repository.findByCode(classSectionDTO.code()).ifPresent(c -> {
+            throw new DuplicateResourceException("ClassSection with code '" + classSectionDTO.code() + "' already exists.");
+        });
+
         Subject subject = subjectRepository.findById(classSectionDTO.subjectId())
-                .orElseThrow(() -> new BusinessException("Subject with the provided ID not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Subject with the provided ID not found."));
 
-        ClassSection newClassSection = new ClassSection();
-        newClassSection.setCode(classSectionDTO.code());
-        newClassSection.setTotalSlots(classSectionDTO.totalSlots());
-        newClassSection.setAvailableSlots(classSectionDTO.totalSlots()); // Initially, available slots are total slots
-        newClassSection.setSubject(subject);
-
-        if (classSectionDTO.status() != null) {
-            newClassSection.setStatus(classSectionDTO.status());
-        } else {
-            newClassSection.setStatus(ClassSectionStatus.OPEN); // Default status
-        }
+        ClassSection newClassSection = buildClassSection(classSectionDTO, subject);
 
         return repository.save(newClassSection);
     }
 
+    private ClassSection buildClassSection(ClassSectionCreateRequestDTO dto, Subject subject) {
+        ClassSection classSection = new ClassSection();
+        classSection.setCode(dto.code());
+        classSection.setTotalSlots(dto.totalSlots());
+        classSection.setAvailableSlots(dto.totalSlots());
+        classSection.setSubject(subject);
+
+        ClassSectionStatus status = (dto.status() != null) ? dto.status() : ClassSectionStatus.OPEN;
+        classSection.setStatus(status);
+
+        return classSection;
+    }
+
+    @Override
     @Transactional
     public ClassSection update(UUID id, ClassSectionUpdateRequestDTO classSectionDTO) {
         ClassSection classSection = repository.findById(id)
-                .orElseThrow(() -> new BusinessException("ClassSection with the provided ID not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("ClassSection with the provided ID not found."));
+
+        repository.findByCode(classSectionDTO.code()).ifPresent(c -> {
+            if (!c.getId().equals(id)) {
+                throw new DuplicateResourceException("ClassSection with code '" + classSectionDTO.code() + "' already exists.");
+            }
+        });
 
         int occupiedSlots = classSection.getTotalSlots() - classSection.getAvailableSlots();
         if (classSectionDTO.totalSlots() < occupiedSlots) {
@@ -62,18 +79,18 @@ public class ClassSectionService {
         classSection.setCode(classSectionDTO.code());
         classSection.setTotalSlots(classSectionDTO.totalSlots());
         classSection.setStatus(classSectionDTO.status());
-        
-        // Recalculate available slots based on the new total
+
         classSection.setAvailableSlots(classSectionDTO.totalSlots() - occupiedSlots);
 
         return repository.save(classSection);
     }
 
+    @Override
+    @Transactional
     public void delete(UUID id) {
         if (!repository.existsById(id)) {
-            throw new BusinessException("ClassSection with the provided ID not found.");
+            throw new ResourceNotFoundException("ClassSection with the provided ID not found.");
         }
-        // TODO: Add validation to prevent deletion if there are enrolled students
         repository.deleteById(id);
     }
 }

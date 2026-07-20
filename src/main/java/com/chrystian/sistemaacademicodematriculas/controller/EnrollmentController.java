@@ -1,9 +1,10 @@
 package com.chrystian.sistemaacademicodematriculas.controller;
 
 
+import com.chrystian.sistemaacademicodematriculas.contract.EnrollmentService;
 import com.chrystian.sistemaacademicodematriculas.dto.EnrollmentResponseDTO;
 import com.chrystian.sistemaacademicodematriculas.model.Enrollment;
-import com.chrystian.sistemaacademicodematriculas.service.EnrollmentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,13 +14,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/enrollments")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
-
-    public EnrollmentController(EnrollmentService enrollmentService) {
-        this.enrollmentService = enrollmentService;
-    }
 
     @PostMapping("/request")
     public ResponseEntity<EnrollmentResponseDTO> requestEnrollment(@RequestParam UUID studentId, @RequestParam UUID classSectionId) {
@@ -44,5 +42,16 @@ public class EnrollmentController {
     @GetMapping("/class-section/{classSectionId}")
     public ResponseEntity<List<Enrollment>> listByClassSection(@PathVariable UUID classSectionId) {
         return ResponseEntity.ok(enrollmentService.listByClassSection(classSectionId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Enrollment>> listAll() {
+        return ResponseEntity.ok(enrollmentService.listAll());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+        enrollmentService.deleteEnrollment(id);
+        return ResponseEntity.noContent().build();
     }
 }

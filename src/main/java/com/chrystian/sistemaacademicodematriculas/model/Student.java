@@ -3,9 +3,7 @@ package com.chrystian.sistemaacademicodematriculas.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -16,6 +14,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(of = {"id", "name", "academicRegistry"})
+@EqualsAndHashCode(of = "id")
 public class Student {
 
     @Id
@@ -35,17 +35,4 @@ public class Student {
     @NotBlank(message = "Academic registry (AR) is required.")
     @Column(name = "academic_registry", nullable = false, unique = true, length = 20)
     private String academicRegistry;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Student)) return false;
-        Student other = (Student) o;
-        return id != null && id.equals(other.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

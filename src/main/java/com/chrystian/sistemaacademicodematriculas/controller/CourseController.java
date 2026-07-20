@@ -1,10 +1,11 @@
 package com.chrystian.sistemaacademicodematriculas.controller;
 
+import com.chrystian.sistemaacademicodematriculas.contract.CourseService;
 import com.chrystian.sistemaacademicodematriculas.dto.CourseCreateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.dto.CourseUpdateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.model.Course;
-import com.chrystian.sistemaacademicodematriculas.service.CourseService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +16,10 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/courses")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class CourseController {
 
     private final CourseService service;
-
-    public CourseController(CourseService service) {
-        this.service = service;
-    }
 
     @GetMapping
     public List<Course> list() {

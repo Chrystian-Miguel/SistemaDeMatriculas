@@ -21,7 +21,7 @@ Mantenha a divisão estrita de pacotes:
 * `model`: Entidades JPA representando a tabela no banco relacional.
 * `dto`: Record/Classes para transporte de dados na API (evite expor entidades JPA diretamente nos controllers).
 * `exception`: Tratamento global de erros usando `@RestControllerAdvice`.
-
+* `contract`: Pacote de interfaces
 ### 2. Regras de Negócio Críticas (Matrícula)
 Ao propor código para o fluxo de matrículas, certifique-se de implementar rigorosamente:
 * **Validação de vagas:** Impedir matrícula se `turma.vagasDisponiveis == 0`.
@@ -55,7 +55,7 @@ Ao propor código para o fluxo de matrículas, certifique-se de implementar rigo
 
 ---
 
-## 🚫 O que NÃO fazer:
+## 🚫 O que NÃO f[azer:]()
 * NÃO crie múltiplos microsserviços.
 * NÃO adicione bibliotecas de mensageria (RabbitMQ, Kafka) ou caches complexos (Redis).
 * NÃO ignore o tratamento de erros (evite retornar apenas `500 Internal Server Error` genérico; use respostas amigáveis de negócios como `400 Bad Request` ou `422 Unprocessable Entity`).

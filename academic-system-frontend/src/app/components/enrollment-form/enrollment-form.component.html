@@ -1,0 +1,65 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>New Enrollment</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Student</mat-label>
+        <input
+          type="text"
+          matInput
+          [formControl]="studentControl"
+          [matAutocomplete]="autoStudent"
+        />
+        <mat-autocomplete
+          #autoStudent="matAutocomplete"
+          [displayWith]="displayStudent"
+          (optionSelected)="onStudentSelected($event.option.value)"
+        >
+          <mat-option *ngFor="let student of filteredStudents | async" [value]="student">
+            {{ student.name }} ({{ student.academicRegistry }})
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Class Section</mat-label>
+        <input
+          type="text"
+          matInput
+          [formControl]="classSectionControl"
+          [matAutocomplete]="autoClassSection"
+        />
+        <mat-autocomplete
+          #autoClassSection="matAutocomplete"
+          [displayWith]="displayClassSection"
+          (optionSelected)="onClassSectionSelected($event.option.value)"
+        >
+          <mat-option
+            *ngFor="let section of filteredClassSections | async"
+            [value]="section"
+          >
+            {{ section.subject.name }} - {{ section.code }} ({{
+              section.availableSlots
+            }}
+            available)
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </form>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="form.invalid"
+    >
+      Save
+    </button>
+    <button mat-raised-button (click)="onCancel()">Cancel</button>
+  </mat-card-actions>
+</mat-card>

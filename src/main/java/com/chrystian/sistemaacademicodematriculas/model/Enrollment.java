@@ -1,9 +1,7 @@
 package com.chrystian.sistemaacademicodematriculas.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -17,6 +15,8 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(of = {"id", "status"})
+@EqualsAndHashCode(of = "id")
 public class Enrollment {
 
     @Id
@@ -38,17 +38,4 @@ public class Enrollment {
 
     @Column(name = "enrollment_date", nullable = false, updatable = false)
     private LocalDateTime enrollmentDate = LocalDateTime.now();
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Enrollment)) return false;
-        Enrollment other = (Enrollment) o;
-        return id != null && id.equals(other.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }
