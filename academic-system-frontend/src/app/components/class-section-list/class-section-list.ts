@@ -6,14 +6,16 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { catchError, Observable, of } from 'rxjs';
+import { EMPTY, catchError, Observable, of } from 'rxjs';
 
 import { ClassSection } from '../../models/class-section.model';
 import { ClassSectionService } from '../../services/class-section.service';
 import { ErrorDialogComponent } from '../shared/error-dialog/error-dialog.component';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-class-section-list',
@@ -29,6 +31,7 @@ import { ErrorDialogComponent } from '../shared/error-dialog/error-dialog.compon
     MatInputModule,
     MatProgressSpinnerModule,
     RouterLink,
+    MatSnackBarModule,
   ],
   templateUrl: './class-section-list.html',
   styleUrl: './class-section-list.scss',
@@ -43,6 +46,8 @@ export class ClassSectionList {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
+  private errorService = inject(ErrorService);
+  private snackBar = inject(MatSnackBar);
 
   constructor() {
     this.refresh();
@@ -76,8 +81,18 @@ export class ClassSectionList {
   }
 
   deleteClassSection(id: string) {
-    this.classSectionService.deleteClassSection(id).subscribe(() => {
+    this.classSectionService.deleteClassSection(id).pipe(
+      catchError(() => {
+        this.errorService.showCustomError("It is not possible to delete a class that has enrolled students.");
+        return EMPTY;
+      })
+    ).subscribe(() => {
       this.refresh();
+      this.snackBar.open('Class Section removed successfully!', 'X', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+      });
     });
   }
 

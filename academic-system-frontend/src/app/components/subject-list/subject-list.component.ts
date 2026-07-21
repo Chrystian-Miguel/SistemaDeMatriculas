@@ -9,10 +9,11 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, Observable, of } from 'rxjs';
+import { EMPTY, catchError, Observable, of } from 'rxjs';
 
 import { Subject } from '../../models/subject';
 import { SubjectService } from '../../services/subject.service';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-subject-list',
@@ -42,7 +43,8 @@ export class SubjectListComponent implements OnInit {
     private subjectService: SubjectService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private errorService: ErrorService
   ) {
     this.refresh();
   }
@@ -69,7 +71,12 @@ export class SubjectListComponent implements OnInit {
   }
 
   onDelete(subject: Subject) {
-    this.subjectService.remove(subject.id).subscribe(() => {
+    this.subjectService.remove(subject.id).pipe(
+      catchError(() => {
+        this.errorService.showCustomError("It is not possible to delete subjects that are linked to a course.");
+        return EMPTY;
+      })
+    ).subscribe(() => {
       this.refresh();
       this.snackBar.open('Subject removed successfully!', 'X', {
         duration: 5000,

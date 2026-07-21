@@ -52,14 +52,14 @@ export class StudentListComponent implements OnInit {
     });
   }
 
-  deleteStudent(id: string): void {
+  deleteStudent(student: Student): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      data: { message: 'Are you sure you want to delete this student?' }
+      data: `Are you sure you want to delete the student ${student.name}?`
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.studentService.deleteStudent(id).subscribe(() => {
+        this.studentService.deleteStudent(student.id).subscribe(() => {
           this.loadStudents();
         });
       }

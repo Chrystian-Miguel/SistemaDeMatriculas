@@ -4,10 +4,10 @@ import "./chunk-GUGIMSVJ.js";
 import {
   Platform
 } from "./chunk-3NC77UB7.js";
+import "./chunk-CCMBG7DE.js";
 import {
   BidiModule
 } from "./chunk-LKGR2PO5.js";
-import "./chunk-CCMBG7DE.js";
 import "./chunk-PL2ZSDB2.js";
 import {
   ChangeDetectionStrategy,

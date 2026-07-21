@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ClassSection } from '../models/class-section.model';
 import { ClassSectionCreateRequestDTO, ClassSectionUpdateRequestDTO } from '../models/dtos/class-section.dto';
+import { SUPPRESS_GLOBAL_ERROR_HANDLER } from '../interceptors/interceptor.context';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,8 @@ export class ClassSectionService {
   }
 
   deleteClassSection(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
+      context: new HttpContext().set(SUPPRESS_GLOBAL_ERROR_HANDLER, true)
+    });
   }
 }

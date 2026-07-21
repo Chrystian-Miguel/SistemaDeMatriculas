@@ -22,6 +22,7 @@ Mantenha a divisão estrita de pacotes:
 * `dto`: Record/Classes para transporte de dados na API (evite expor entidades JPA diretamente nos controllers).
 * `exception`: Tratamento global de erros usando `@RestControllerAdvice`.
 * `contract`: Pacote de interfaces
+
 ### 2. Regras de Negócio Críticas (Matrícula)
 Ao propor código para o fluxo de matrículas, certifique-se de implementar rigorosamente:
 * **Validação de vagas:** Impedir matrícula se `turma.vagasDisponiveis == 0`.

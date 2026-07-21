@@ -4,7 +4,7 @@ import com.chrystian.sistemaacademicodematriculas.contract.ClassSectionService;
 import com.chrystian.sistemaacademicodematriculas.dto.ClassSectionCreateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.dto.ClassSectionUpdateRequestDTO;
 import com.chrystian.sistemaacademicodematriculas.exception.BusinessException;
-import com.chrystian.sistemaacademicodematriculas.exception.DuplicateResourceException;
+import com.chrystian.sistemaacademicodematriculas.exception.ValidationException;
 import com.chrystian.sistemaacademicodematriculas.exception.ResourceNotFoundException;
 import com.chrystian.sistemaacademicodematriculas.model.ClassSection;
 import com.chrystian.sistemaacademicodematriculas.model.ClassSectionStatus;
@@ -15,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -34,9 +36,7 @@ public class ClassSectionServiceImpl implements ClassSectionService {
     @Override
     @Transactional
     public ClassSection create(ClassSectionCreateRequestDTO classSectionDTO) {
-        repository.findByCode(classSectionDTO.code()).ifPresent(c -> {
-            throw new DuplicateResourceException("ClassSection with code '" + classSectionDTO.code() + "' already exists.");
-        });
+        validateUniqueness(classSectionDTO.code(), null);
 
         Subject subject = subjectRepository.findById(classSectionDTO.subjectId())
                 .orElseThrow(() -> new ResourceNotFoundException("Subject with the provided ID not found."));
@@ -65,11 +65,7 @@ public class ClassSectionServiceImpl implements ClassSectionService {
         ClassSection classSection = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("ClassSection with the provided ID not found."));
 
-        repository.findByCode(classSectionDTO.code()).ifPresent(c -> {
-            if (!c.getId().equals(id)) {
-                throw new DuplicateResourceException("ClassSection with code '" + classSectionDTO.code() + "' already exists.");
-            }
-        });
+        validateUniqueness(classSectionDTO.code(), id);
 
         int occupiedSlots = classSection.getTotalSlots() - classSection.getAvailableSlots();
         if (classSectionDTO.totalSlots() < occupiedSlots) {
@@ -83,6 +79,19 @@ public class ClassSectionServiceImpl implements ClassSectionService {
         classSection.setAvailableSlots(classSectionDTO.totalSlots() - occupiedSlots);
 
         return repository.save(classSection);
+    }
+
+    private void validateUniqueness(String code, UUID currentId) {
+        Map<String, String> errors = new HashMap<>();
+        repository.findByCode(code).ifPresent(c -> {
+            if (currentId == null || !c.getId().equals(currentId)) {
+                errors.put("code", "ClassSection with code '" + code + "' already exists.");
+            }
+        });
+
+        if (!errors.isEmpty()) {
+            throw new ValidationException(errors);
+        }
     }
 
     @Override

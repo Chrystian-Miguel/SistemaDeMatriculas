@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Course } from '../models/course.model';
 import { CourseCreateRequestDTO, CourseUpdateRequestDTO } from '../models/dtos/course.dto';
+import { SUPPRESS_GLOBAL_ERROR_HANDLER } from '../interceptors/interceptor.context';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,8 @@ export class CourseService {
   }
 
   deleteCourse(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, {
+      context: new HttpContext().set(SUPPRESS_GLOBAL_ERROR_HANDLER, true)
+    });
   }
 }

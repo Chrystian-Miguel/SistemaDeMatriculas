@@ -96,7 +96,7 @@ export class ClassSectionFormComponent implements OnInit {
           code: formValue.code ?? '',
           totalSlots: Number(formValue.totalSlots ?? 0),
           subjectId: formValue.subjectId ?? '',
-          status: formValue.status ?? 'OPEN'
+          status: 'OPEN'
         };
         this.classSectionService.createClassSection(createDto)
           .subscribe(() => this.router.navigate(['/class-sections']));

@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Subject } from '../models/subject';
+import { SUPPRESS_GLOBAL_ERROR_HANDLER } from '../interceptors/interceptor.context';
 
 @Injectable({
   providedIn: 'root'
@@ -21,14 +22,16 @@ export class SubjectService {
     return this.list();
   }
 
-  save(record: Partial<Subject>) {
+  save(record: Partial<Subject>): Observable<Subject> {
     if (record.id) {
       return this.httpClient.put<Subject>(`${this.API}/${record.id}`, record);
     }
     return this.httpClient.post<Subject>(this.API, record);
   }
 
-  remove(id: string) {
-    return this.httpClient.delete(`${this.API}/${id}`);
+  remove(id: string): Observable<void> {
+    return this.httpClient.delete<void>(`${this.API}/${id}`, {
+      context: new HttpContext().set(SUPPRESS_GLOBAL_ERROR_HANDLER, true)
+    });
   }
 }

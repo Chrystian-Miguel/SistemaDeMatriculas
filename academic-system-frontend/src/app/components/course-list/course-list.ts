@@ -9,10 +9,11 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, EMPTY, Observable, of } from 'rxjs';
 
 import { Course } from '../../models/course.model';
 import { CourseService } from '../../services/course.service';
+import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-course-list',
@@ -41,7 +42,8 @@ export class CourseList implements OnInit {
     private courseService: CourseService,
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private errorService: ErrorService
   ) {}
 
   ngOnInit(): void {
@@ -67,13 +69,18 @@ export class CourseList implements OnInit {
   }
 
   onDelete(course: Course): void {
-    this.courseService.deleteCourse(course.id).subscribe(() => {
-      this.refresh();
-      this.snackBar.open('Course removed successfully!', 'X', {
-        duration: 5000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-      });
+    this.courseService.deleteCourse(course.id).pipe(
+      catchError(() => {
+        this.errorService.showCustomError('It is not possible to delete courses that have registered subjects.');
+        return EMPTY;
+      })
+    ).subscribe(() => {
+        this.refresh();
+        this.snackBar.open('Course removed successfully!', 'X', {
+          duration: 5000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+        });
     });
   }
 

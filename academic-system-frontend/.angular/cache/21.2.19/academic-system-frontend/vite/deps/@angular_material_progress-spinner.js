@@ -4,11 +4,11 @@ import {
 import "./chunk-N4DOILP3.js";
 import "./chunk-3NC77UB7.js";
 import {
-  BidiModule
-} from "./chunk-LKGR2PO5.js";
-import {
   NgTemplateOutlet
 } from "./chunk-CCMBG7DE.js";
+import {
+  BidiModule
+} from "./chunk-LKGR2PO5.js";
 import "./chunk-PL2ZSDB2.js";
 import {
   ChangeDetectionStrategy,
