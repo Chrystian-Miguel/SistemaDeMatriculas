@@ -72,7 +72,7 @@ Este projeto é uma API REST para um sistema de matrículas acadêmicas, desenvo
     O banco de dados MySQL estará acessível na porta `3306`.
 3.  **Execute a Aplicação Spring Boot:**
     ```bash
-    mvn spring-boot:run
+    mvn spring-boot:run ou .\mvnw spring-boot:run
     ```
     A API estará disponível em `http://localhost:8080`.
 
